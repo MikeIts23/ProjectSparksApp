@@ -1,0 +1,51 @@
+name: sparks_mobile_game
+description: A mobile game app with authentication, leaderboard, profile, and Unity integration.
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.7.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  provider: ^6.1.0
+  firebase_core: ^2.14.0
+  firebase_auth: ^4.6.3
+  flutter_svg: ^1.1.6
+  cloud_firestore: ^4.8.0
+  google_sign_in: ^6.1.5
+  flutter_facebook_auth: ^7.1.1
+  flutter_unity_widget:
+    git:
+      url: https://github.com/juicycleff/flutter-unity-view-widget.git
+  shared_preferences: ^2.2.0
+  fluttertoast: ^8.2.2
+  cupertino_icons: ^1.0.5
+  lottie: ^2.3.0
+  cached_network_image: ^3.2.3
+  http: ^1.3.0
+  flutter_dotenv: ^5.0.2
+  flutter_launcher_icons: ^0.13.1
+  url_launcher: ^6.1.10
+  intl: ^0.18.0
+
+dev_dependencies:
+  flutter_lints: ^2.0.0
+  flutter_test:
+    sdk: flutter
+
+flutter:
+  uses-material-design: true
+
+assets:
+  - assets/images/
+  - assets/icons/
+  - assets/lottie/
+
+flutter_icons:
+  android: true
+  ios: true
+  image_path: "assets/icons/app_icon.png"
