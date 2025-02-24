@@ -5,10 +5,10 @@ class Loginscreen3Widget extends StatefulWidget {
   const Loginscreen3Widget({Key? key}) : super(key: key);
 
   @override
-  _Loginscreen3WidgetState createState() => _Loginscreen3WidgetState();
+  Loginscreen3WidgetState createState() => Loginscreen3WidgetState();
 }
 
-class _Loginscreen3WidgetState extends State<Loginscreen3Widget> {
+class Loginscreen3WidgetState extends State<Loginscreen3Widget> {
   // Controller per i campi di testo
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _nameController = TextEditingController();
@@ -141,13 +141,13 @@ class _Loginscreen3WidgetState extends State<Loginscreen3Widget> {
             // ---------------------------
             // Titolo "Get Started"
             // ---------------------------
-            Positioned(
+            const Positioned(
               top: 281,
               left: 103,
               child: SizedBox(
                 width: 226,
                 height: 49,
-                child: const Text(
+                child: Text(
                   'Get Started',
                   style: TextStyle(
                     color: Color.fromRGBO(239, 239, 239, 1),
@@ -362,7 +362,7 @@ class _Loginscreen3WidgetState extends State<Loginscreen3Widget> {
             // ---------------------------
             // "Or continue with"
             // ---------------------------
-            Positioned(
+            const Positioned(
               top: 815,
               left: 67,
               child: SizedBox(
@@ -370,7 +370,7 @@ class _Loginscreen3WidgetState extends State<Loginscreen3Widget> {
                 height: 14,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: const [
+                  children: [
                     Expanded(child: Divider(color: Colors.grey)),
                     Padding(
                       padding: EdgeInsets.symmetric(horizontal: 8.0),

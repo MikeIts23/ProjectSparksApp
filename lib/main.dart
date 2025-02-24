@@ -12,9 +12,8 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
 
-  // Qui puoi decidere quale schermata mostrare come prima
-  // Se vuoi che l'utente debba fare login subito, imposta '/login'.
-  // Altrimenti, la Home con '/'.
+  static final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -22,17 +21,23 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      // Rotta iniziale (puoi scegliere '/login' se vuoi mostrare
-      // per prima la schermata di login)
+      navigatorKey: navigatorKey,
       initialRoute: '/',
-
-      // Mappa delle rotte
-      routes: {
-        '/login': (context) => const LoginScreen1Widget(),
-        '/register': (context) => const Loginscreen3Widget(),
-        '/profile': (context) => const Profile1Widget(),
-        '/leaderboard': (context) => const LeaderboardPage(),
-        '/game': (context) => const GameView(),
+      onGenerateRoute: (settings) {
+        switch (settings.name) {
+          case '/login':
+            return MaterialPageRoute(builder: (_) => const LoginScreen1Widget());
+          case '/register':
+            return MaterialPageRoute(builder: (_) => const Loginscreen3Widget());
+          case '/profile':
+            return MaterialPageRoute(builder: (_) => const Profile1Widget());
+          case '/leaderboard':
+            return MaterialPageRoute(builder: (_) => const LeaderboardPage());
+          case '/game':
+            return MaterialPageRoute(builder: (_) => const GameView());
+          default:
+            return MaterialPageRoute(builder: (_) => const LoginScreen1Widget());
+        }
       },
     );
   }
