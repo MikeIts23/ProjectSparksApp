@@ -19,12 +19,11 @@ class navbarState extends State<navbar> {
   ];
 
   void _onItemTapped(int index) {
-    if (_selectedIndex != index) {
-      setState(() {
-        _selectedIndex = index;
-      });
-      Navigator.of(context).pushReplacementNamed(_routes[index]);
-    }
+    // Rimuoviamo il controllo sull'indice per forzare la navigazione ogni volta
+    setState(() {
+      _selectedIndex = index;
+    });
+    Navigator.of(context).pushReplacementNamed(_routes[index]);
   }
 
   @override

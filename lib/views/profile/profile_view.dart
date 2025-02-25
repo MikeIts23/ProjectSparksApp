@@ -54,7 +54,7 @@ class Profile1WidgetState extends State<Profile1Widget> {
                         right: 10,
                         child: GestureDetector(
                           onTap: () {
-                            // Esempio: apri schermata edit
+                            // Naviga alla pagina edit_profile.dart
                             Navigator.pushNamed(context, '/editProfile');
                           },
                           child: SvgPicture.asset(
@@ -95,7 +95,7 @@ class Profile1WidgetState extends State<Profile1Widget> {
                           style: TextStyle(color: Colors.white),
                         ),
                         onTap: () {
-                          Navigator.pushNamed(context, '/editProfile');
+                          Navigator.pushNamed(context, '/edit_profile');
                         },
                       ),
                       Divider(color: Colors.white.withOpacity(0.2), height: 1),
@@ -117,7 +117,7 @@ class Profile1WidgetState extends State<Profile1Widget> {
                           },
                         ),
                         onTap: () {
-                          // Se vuoi abilitare/disabilitare toccando la riga
+                          // Permette di abilitare/disabilitare le notifiche toccando la riga
                           setState(() {
                             _notificationsOn = !_notificationsOn;
                           });
@@ -170,7 +170,7 @@ class Profile1WidgetState extends State<Profile1Widget> {
                           style: TextStyle(color: Colors.white),
                         ),
                         onTap: () {
-                          Navigator.pushNamed(context, '/login');
+                          Navigator.pushNamed(context, '/login_view');
                         },
                       ),
                       Divider(color: Colors.white.withOpacity(0.2), height: 1),
@@ -183,8 +183,7 @@ class Profile1WidgetState extends State<Profile1Widget> {
                           style: TextStyle(color: Colors.white),
                         ),
                         onTap: () {
-                          print('Tap su Contact us');
-                          // Aggiungi qui la logica
+                          Navigator.pushNamed(context, '/contact_view');
                         },
                       ),
                       Divider(color: Colors.white.withOpacity(0.2), height: 1),
@@ -197,7 +196,7 @@ class Profile1WidgetState extends State<Profile1Widget> {
                           style: TextStyle(color: Colors.white),
                         ),
                         onTap: () {
-                          Navigator.pushNamed(context, '/policy');
+                          Navigator.pushNamed(context, '/privacy_view');
                         },
                       ),
                     ],
