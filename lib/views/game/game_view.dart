@@ -20,7 +20,7 @@ class GameViewState extends State<GameView> {
         decoration: const BoxDecoration(
           // Immagine di sfondo (assicurati di averla nel pubspec.yaml)
           image: DecorationImage(
-            image: AssetImage('assets/images/Homewgame.png'),
+            image: AssetImage('lib/assets/images/wallapaper.jpg'),
             fit: BoxFit.cover,
           ),
         ),

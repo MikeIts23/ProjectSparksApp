@@ -1,5 +1,6 @@
+import 'dart:math' as math;
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+import 'Diamond_Clipper.dart';
 
 class navbar extends StatefulWidget {
   const navbar({Key? key}) : super(key: key);
@@ -18,7 +19,7 @@ class navbarState extends State<navbar> {
   ];
 
   void _onItemTapped(int index) {
-    if (_selectedIndex != index) {  // Evita navigazione ripetuta sulla stessa pagina
+    if (_selectedIndex != index) {
       setState(() {
         _selectedIndex = index;
       });
@@ -33,39 +34,76 @@ class navbarState extends State<navbar> {
       height: 77,
       child: Container(
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(50),
           color: const Color.fromRGBO(28, 32, 61, 1),
+          borderRadius: BorderRadius.circular(50),
         ),
-        padding: const EdgeInsets.symmetric(horizontal: 58, vertical: 12),
+        // Eventualmente regola il padding per lasciare spazio
+        padding: const EdgeInsets.symmetric(horizontal: 30),
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            _buildNavItem(Icons.leaderboard, 'Rank', 0),
-            _buildNavItem(Icons.play_arrow, 'Game', 1),
-            _buildNavItem(Icons.person, 'Account', 2),
+            // 1) Pulsante Rank
+            _buildNavItem(
+              icon: Icons.leaderboard,
+              label: 'Rank',
+              index: 0,
+            ),
+
+            // 2) Pulsante centrale con l'immagine poligono
+            _buildCenterPlayItem(index: 1),
+
+            // 3) Pulsante Account
+            _buildNavItem(
+              icon: Icons.person,
+              label: 'Account',
+              index: 2,
+            ),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildNavItem(IconData icon, String label, int index) {
-    final isSelected = _selectedIndex == index;
+  // Pulsante Rank / Account standard (icona + testo)
+  Widget _buildNavItem({
+    required IconData icon,
+    required String label,
+    required int index,
+  }) {
+    final bool isSelected = (_selectedIndex == index);
+    final Color iconColor = isSelected ? Colors.white : Colors.grey;
+
     return GestureDetector(
       onTap: () => _onItemTapped(index),
       child: Column(
         mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(icon, color: isSelected ? Colors.white : Colors.grey, size: 24),
+          Icon(icon, color: iconColor, size: 24),
           const SizedBox(height: 4),
           Text(
             label,
             style: TextStyle(
-              color: isSelected ? Colors.white : Colors.grey,
+              color: iconColor,
               fontSize: 10,
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  // Bottone centrale con Polygon1Widget
+  Widget _buildCenterPlayItem({required int index}) {
+    final bool isSelected = (_selectedIndex == index);
+
+    return GestureDetector(
+      onTap: () => _onItemTapped(index),
+      child: const SizedBox(
+        width: 60, // ingrandisci se vuoi un bottone più grande
+        height: 60,
+        child: Polygon1Widget(), // L'immagine PNG come bottone
       ),
     );
   }
