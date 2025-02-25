@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import '../../common/custom_navbar.dart';
+import 'retangle.dart';
 
 class Profile1Widget extends StatefulWidget {
   const Profile1Widget({Key? key}) : super(key: key);
