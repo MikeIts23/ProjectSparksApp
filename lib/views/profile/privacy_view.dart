@@ -7,141 +7,145 @@ class PrivacyPolicyPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // Niente AppBar “classica” per aderire allo stile di Figma
-      body: Stack(
-        children: [
-          // ---------- SFONDO ----------
-          Positioned.fill(
-            child: Image.asset(
-              'assets/images/Profile3.png',
-              fit: BoxFit.cover,
+      // Utilizziamo un background con gradiente
+      body: Container(
+        width: double.infinity,
+        height: double.infinity,
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              Color(0xFF1C203D), // Colore superiore: un nero profondo
+              Color(0xFF4B56A3), // Colore inferiore: un viola scuro
+            ],
+          ),
+          // Arrotondamento dei bordi inferiori
+          borderRadius: BorderRadius.only(
+            bottomLeft: Radius.circular(40),
+            bottomRight: Radius.circular(40),
+          ),
+        ),
+        child: SafeArea(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // FRECCIA BACK + TITOLO
+                Row(
+                  children: [
+                    GestureDetector(
+                      onTap: () => Navigator.pop(context),
+                      child: SvgPicture.asset(
+                        'assets/images/vector.svg', // icona back
+                        width: 35,
+                        height: 35,
+                        // Puoi specificare il colore se necessario, ad esempio: color: Colors.white,
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    const Text(
+                      'Privacy Policy',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontFamily: 'Inter',
+                        fontSize: 32,
+                        height: 1.0,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 24),
+
+                // BLOCCO 1: Types of Data We Collect
+                const Text(
+                  '1. Types of Data We Collect',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontFamily: 'Poppins',
+                    fontSize: 16,
+                    letterSpacing: 0.1,
+                    height: 1.5,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                const Text(
+                  '''Our mobile application collects only the data that is essential for providing and enhancing our services. This includes:
+• Personal data such as your name, email address, and phone number when you voluntarily provide it.
+• Technical data such as device information, IP address, operating system details, and usage statistics.
+• Location data, if you grant permission, to deliver location-based services.
+All data collection practices are conducted in strict compliance with the GDPR and other applicable data protection regulations.''',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontFamily: 'Roboto',
+                    fontSize: 14,
+                    letterSpacing: 0.25,
+                    height: 1.5,
+                  ),
+                ),
+                const SizedBox(height: 24),
+
+                // BLOCCO 2: Use of Your Personal Data
+                const Text(
+                  '2. Use of Your Personal Data',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontFamily: 'Poppins',
+                    fontSize: 16,
+                    letterSpacing: 0.1,
+                    height: 1.5,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                const Text(
+                  '''We use your personal data for a variety of purposes including:
+• Providing, maintaining, and improving our services.
+• Personalizing your experience and offering customer support.
+• Analyzing usage trends to enhance functionality and user satisfaction.
+• Communicating updates, promotions, and other relevant information.
+All processing activities are performed in accordance with GDPR requirements and international data protection standards, ensuring that your privacy is protected.''',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontFamily: 'Roboto',
+                    fontSize: 14,
+                    letterSpacing: 0.25,
+                    height: 1.5,
+                  ),
+                ),
+                const SizedBox(height: 24),
+
+                // BLOCCO 3: Disclosure of Your Personal Data
+                const Text(
+                  '3. Disclosure of Your Personal Data',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontFamily: 'Poppins',
+                    fontSize: 16,
+                    letterSpacing: 0.1,
+                    height: 1.5,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                const Text(
+                  '''We will not sell or rent your personal data. We may share your data only with:
+• Trusted third-party service providers who assist in delivering our services, under strict confidentiality and data protection agreements.
+• Regulatory or governmental authorities when legally required to do so.
+• Business partners with whom we have entered into a joint venture, provided that the disclosure complies with all applicable data protection laws.
+All data disclosures are governed by strict contractual and technical safeguards, ensuring compliance with GDPR and other international data protection legislation.''',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontFamily: 'Roboto',
+                    fontSize: 14,
+                    letterSpacing: 0.25,
+                    height: 1.5,
+                  ),
+                ),
+                const SizedBox(height: 24),
+              ],
             ),
           ),
-
-          // ---------- CONTENUTO PRINCIPALE ----------
-          SafeArea(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // ---------- FRECCIA BACK + TITOLO ----------
-                  Row(
-                    children: [
-                      GestureDetector(
-                        onTap: () {
-                          // Torna indietro
-                          Navigator.pop(context);
-                        },
-                        child: SvgPicture.asset(
-                          'assets/images/vector.svg', // la tua icona di back
-                          width: 35,
-                          height: 35,
-                          // Se vuoi cambiare colore: color: Colors.white,
-                        ),
-                      ),
-                      const SizedBox(width: 16),
-                      const Text(
-                        'Privacy Policy',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontFamily: 'Inter',
-                          fontSize: 32,
-                          height: 1.0, // da Figma: 0.875, arrotondiamo a 1
-                        ),
-                      ),
-                    ],
-                  ),
-
-                  const SizedBox(height: 24),
-
-                  // ---------- BLOCCO 1: TYPES DATA WE COLLECT ----------
-                  const Text(
-                    '1. Types data we collect',
-                    style: TextStyle(
-                      color: Color.fromRGBO(254, 254, 254, 1),
-                      fontFamily: 'Poppins',
-                      fontSize: 16,
-                      letterSpacing: 0.1,
-                      height: 1.5,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  const Text(
-                    '''Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-
-Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident.''',
-                    style: TextStyle(
-                      color: Color.fromRGBO(254, 254, 254, 1),
-                      fontFamily: 'Roboto',
-                      fontSize: 14,
-                      letterSpacing: 0.25,
-                      height: 1.5, // per migliorare la leggibilità
-                    ),
-                  ),
-
-                  const SizedBox(height: 24),
-
-                  // ---------- BLOCCO 2: USE OF YOUR PERSONAL DATA ----------
-                  const Text(
-                    '2. Use of your personal data',
-                    style: TextStyle(
-                      color: Color.fromRGBO(254, 254, 254, 1),
-                      fontFamily: 'Poppins',
-                      fontSize: 16,
-                      letterSpacing: 0.1,
-                      height: 1.5,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  const Text(
-                    '''Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae.
-
-Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit.''',
-                    style: TextStyle(
-                      color: Color.fromRGBO(254, 254, 254, 1),
-                      fontFamily: 'Roboto',
-                      fontSize: 14,
-                      letterSpacing: 0.25,
-                      height: 1.5,
-                    ),
-                  ),
-
-                  const SizedBox(height: 24),
-
-                  // ---------- BLOCCO 3: DISCLOSURE OF YOUR PERSONAL DATA ----------
-                  const Text(
-                    '3. Disclosure of your personal data',
-                    style: TextStyle(
-                      color: Color.fromRGBO(254, 254, 254, 1),
-                      fontFamily: 'Poppins',
-                      fontSize: 16,
-                      letterSpacing: 0.1,
-                      height: 1.5,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  const Text(
-                    '''At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga.
-
-Et harum quidem rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus id quod maxime placeat facere possimus, omnis voluptas assumenda est, omnis dolor repellendus.
-
-Temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus saepe eveniet ut et voluptates repudiandae sint et molestiae non recusandae. Itaque earum rerum hic tenetur a sapiente delectus''',
-                    style: TextStyle(
-                      color: Color.fromRGBO(254, 254, 254, 1),
-                      fontFamily: 'Roboto',
-                      fontSize: 14,
-                      letterSpacing: 0.25,
-                      height: 1.5,
-                    ),
-                  ),
-
-                  const SizedBox(height: 24),
-                ],
-              ),
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }
