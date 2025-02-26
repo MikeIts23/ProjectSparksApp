@@ -1,7 +1,9 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:image_picker/image_picker.dart'; // Per la selezione immagini
 import '../../common/custom_navbar.dart';
-import 'retangle.dart';
 
 class Profile1Widget extends StatefulWidget {
   const Profile1Widget({Key? key}) : super(key: key);
@@ -12,19 +14,30 @@ class Profile1Widget extends StatefulWidget {
 
 class Profile1WidgetState extends State<Profile1Widget> {
   bool _notificationsOn = true; // Per gestire lo switch delle notifiche
+  File? _pickedImage;           // Immagine scelta dalla galleria
+
+  // Metodo per aprire la galleria e selezionare l'immagine
+  Future<void> _pickImage() async {
+    final ImagePicker picker = ImagePicker();
+    final XFile? image = await picker.pickImage(source: ImageSource.gallery);
+    if (image == null) return; // Utente ha annullato
+    setState(() {
+      _pickedImage = File(image.path);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // Colore di sfondo "fallback" (se dovesse mancare la pittura)
       backgroundColor: const Color.fromRGBO(28, 32, 61, 1),
 
       body: Stack(
         children: [
-          // -------------- SFONDO --------------
+          // -------------- SFONDO CUSTOM PAINT --------------
           Positioned.fill(
-            child: Image.asset(
-              'assets/images/Profile1.png',
-              fit: BoxFit.cover,
+            child: CustomPaint(
+              painter: _BackgroundPainter(),
             ),
           ),
 
@@ -32,7 +45,7 @@ class Profile1WidgetState extends State<Profile1Widget> {
           SingleChildScrollView(
             child: Column(
               children: [
-                const SizedBox(height: 120),
+                const SizedBox(height: 130),
 
                 // Avatar + matita
                 Center(
@@ -44,9 +57,12 @@ class Profile1WidgetState extends State<Profile1Widget> {
                         height: 170,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(170),
-                          image: const DecorationImage(
-                            image: AssetImage('assets/images/Ellipse25.png'),
+                          image: DecorationImage(
                             fit: BoxFit.cover,
+                            image: _pickedImage == null
+                                ? const AssetImage('assets/images/Ellipse25.png')
+                            as ImageProvider
+                                : FileImage(_pickedImage!),
                           ),
                         ),
                       ),
@@ -54,10 +70,7 @@ class Profile1WidgetState extends State<Profile1Widget> {
                         bottom: 10,
                         right: 10,
                         child: GestureDetector(
-                          onTap: () {
-                            // Naviga alla pagina edit_profile.dart
-                            Navigator.pushNamed(context, '/editProfile');
-                          },
+                          onTap: _pickImage, // Seleziona immagine dalla galleria
                           child: SvgPicture.asset(
                             'assets/images/vector.svg',
                             width: 24,
@@ -70,7 +83,8 @@ class Profile1WidgetState extends State<Profile1Widget> {
                   ),
                 ),
 
-                const SizedBox(height: 30),
+                // Spazio extra per armonizzare
+                const SizedBox(height: 50),
 
                 // -------------- CARD 1: EDIT, NOTIFICHE, LINGUA --------------
                 Container(
@@ -138,7 +152,7 @@ class Profile1WidgetState extends State<Profile1Widget> {
                           style: TextStyle(color: Colors.blue),
                         ),
                         onTap: () {
-                          print('Tap su Language');
+                          debugPrint('Tap su Language');
                         },
                       ),
                     ],
@@ -215,4 +229,70 @@ class Profile1WidgetState extends State<Profile1Widget> {
       bottomNavigationBar: const navbar(),
     );
   }
+}
+
+/// CustomPainter che disegna la parte alta con un gradiente giallo→verde
+/// e la parte bassa con gradiente #1C203D → #4B56A3, separate da una curva.
+class _BackgroundPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    // Decidi quanto in basso disegnare la "curva" tra top e bottom
+    final double curveHeight = size.height * 0.4;
+
+    // ---------- GRADIENTE SUPERIORE (GIALLO→VERDE) ----------
+    final paintTop = Paint();
+    final gradientTop = const LinearGradient(
+      begin: Alignment.topCenter,
+      end: Alignment.bottomCenter,
+      colors: [
+        Color(0xFFFBB03B), // Giallo/Arancione
+        Color(0xFF7BE495), // Verde
+      ],
+    );
+    final rectTop = Rect.fromLTWH(0, 0, size.width, curveHeight);
+    paintTop.shader = gradientTop.createShader(rectTop);
+
+    final pathTop = Path()
+      ..lineTo(size.width, 0)
+      ..lineTo(size.width, curveHeight)
+      ..quadraticBezierTo(
+        size.width * 0.5,
+        curveHeight + 50,
+        0,
+        curveHeight,
+      )
+      ..close();
+
+    canvas.drawPath(pathTop, paintTop);
+
+    // ---------- GRADIENTE INFERIORE (#1C203D → #4B56A3) ----------
+    final paintBottom = Paint();
+    final gradientBottom = const LinearGradient(
+      begin: Alignment.topCenter,
+      end: Alignment.bottomCenter,
+      colors: [
+        Color(0xFF1C203D),
+        Color(0xFF4B56A3),
+      ],
+    );
+    final rectBottom = Rect.fromLTWH(0, curveHeight, size.width, size.height - curveHeight);
+    paintBottom.shader = gradientBottom.createShader(rectBottom);
+
+    final pathBottom = Path()
+      ..moveTo(0, curveHeight)
+      ..quadraticBezierTo(
+        size.width * 0.5,
+        curveHeight + 50,
+        size.width,
+        curveHeight,
+      )
+      ..lineTo(size.width, size.height)
+      ..lineTo(0, size.height)
+      ..close();
+
+    canvas.drawPath(pathBottom, paintBottom);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }

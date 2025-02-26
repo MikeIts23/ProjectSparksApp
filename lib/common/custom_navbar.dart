@@ -1,6 +1,6 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
-import 'Diamond_Clipper.dart';
+import 'diamond_clipper.dart';
 
 class navbar extends StatefulWidget {
   const navbar({Key? key}) : super(key: key);
@@ -19,7 +19,6 @@ class navbarState extends State<navbar> {
   ];
 
   void _onItemTapped(int index) {
-    // Rimuoviamo il controllo sull'indice per forzare la navigazione ogni volta
     setState(() {
       _selectedIndex = index;
     });
