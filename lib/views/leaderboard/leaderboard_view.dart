@@ -1,477 +1,364 @@
+import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import '../../common/custom_navbar.dart';
-import 'dart:math' as math;
+import '../../common/custom_navbar.dart'; // La tua navbar personalizzata
 
 class LeaderboardPage extends StatefulWidget {
   const LeaderboardPage({Key? key}) : super(key: key);
 
   @override
-  LeaderboardPageState createState() => LeaderboardPageState();
+  State<LeaderboardPage> createState() => _LeaderboardPageState();
 }
 
-class LeaderboardPageState extends State<LeaderboardPage> {
-  int _selectedTab = 0; // 0 = Friends, 1 = National, 2 = Global
+class _LeaderboardPageState extends State<LeaderboardPage> {
+  // Indice del tab selezionato: 0 = Friends, 1 = National, 2 = Global
+  int _selectedTab = 0;
 
-  // Cambia tab
-  void _onTabSelected(int index) {
-    setState(() {
-      _selectedTab = index;
-    });
+  late List<Map<String, dynamic>> _podium;
+  late List<Map<String, dynamic>> _userList;
+
+  @override
+  void initState() {
+    super.initState();
+    // Generiamo sia il podio che la lista random alla partenza
+    _podium = _generateRandomPodium();
+    _userList = _generateRandomUsers();
+  }
+
+  List<Map<String, dynamic>> _generateRandomPodium() {
+    final random = Random();
+
+    // Dati di base: nomi, rank e color fissi
+    final podiumNames = ['Jackson', 'Eiden', 'Emma Aria'];
+    final rankColors = [
+      const Color.fromRGBO(0, 155, 214, 1), // Jackson (2°)
+      const Color.fromRGBO(255, 170, 0, 1), // Eiden (1°)
+      const Color.fromRGBO(0, 217, 95, 1),  // Emma (3°)
+    ];
+    final ranks = [2, 1, 3];
+    final rectHeights = [120.0, 159.0, 120.0];
+
+    // Creiamo un seed casuale per ognuno
+    final seeds = List.generate(3, (_) => random.nextInt(999999));
+
+    final podium = <Map<String, dynamic>>[];
+    for (var i = 0; i < 3; i++) {
+      final seed = seeds[i];
+      // Immagine da Picsum con dimensione ~80x80
+      final imageUrl = 'https://picsum.photos/seed/$seed/80';
+
+      // Punteggio random (1000..3000)
+      final score = 1000 + random.nextInt(2001);
+
+      final randomUsername = _generateRandomUsername(random);
+
+      podium.add({
+        'name': podiumNames[i],
+        'score': score,
+        'borderColor': rankColors[i],
+        'rank': ranks[i],
+        'rectHeight': rectHeights[i],
+        'img': imageUrl,          // Immagine random da Picsum
+        'username': randomUsername,
+      });
+    }
+
+    return podium;
+  }
+
+  /// Genera una lista di utenti con nomi e immagini casuali (Picsum).
+  /// Punteggi random (500..1500), username random.
+  List<Map<String, dynamic>> _generateRandomUsers() {
+    final random = Random();
+
+    // Possibili nomi
+    final possibleNames = [
+      'Sebastian', 'Jason', 'Natalie', 'Serenity', 'Thomas',
+      'Adriana', 'Luca', 'Michele', 'Sophie', 'Anna',
+      'Gabriel', 'Chiara', 'Lorenzo', 'Giulia', 'Rebecca',
+      'Matteo', 'Francesca', 'Marco', 'Daria',
+    ];
+
+    // Mescoliamo i nomi
+    possibleNames.shuffle(random);
+
+    // Selezioniamo i primi 7
+    final selected = possibleNames.take(7).toList();
+
+    final userList = <Map<String, dynamic>>[];
+    for (var name in selected) {
+      final score = 500 + random.nextInt(1001); // 500..1500
+      final seed = random.nextInt(999999);
+      final imageUrl = 'https://picsum.photos/seed/$seed/50';
+      final randomUsername = _generateRandomUsername(random);
+
+      userList.add({
+        'name': name,
+        'img': imageUrl,
+        'score': score,
+        'username': randomUsername,
+      });
+    }
+
+    return userList;
+  }
+
+  /// Genera un username casuale tipo "@user1234"
+  String _generateRandomUsername(Random random) {
+    final number = random.nextInt(9999); // 0..9999
+    return '@user$number';
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF1C203D), // sfondo scuro
+      bottomNavigationBar: const navbar(),
 
-      body: SafeArea(
-        child: Stack(
-          children: [
-            // ---------- TITOLO "Leaderboard" ----------
-            const Positioned(
-              top: 20,
-              left: 0,
-              right: 0,
-              child: Center(
-                child: Text(
+      body: Container(
+        // Sfondo scuro a gradiente
+        width: double.infinity,
+        height: double.infinity,
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              Color(0xFF1C203D), // in alto
+              Color(0xFF2B3055), // in basso
+            ],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+        ),
+        child: SafeArea(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+            child: Column(
+              children: [
+                // ---------- TITOLO ----------
+                const Text(
                   'Leaderboard',
                   style: TextStyle(
                     color: Colors.white,
-                    fontFamily: 'Inter',
-                    fontSize: 20,
+                    fontSize: 24,
                   ),
                 ),
-              ),
-            ),
 
-            // ---------- TABS "Friends / National / Global" ----------
-            Positioned(
-              top: 80,
-              left: 15,
-              right: 15,
-              child: Container(
-                height: 50,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12),
-                  color: const Color.fromRGBO(30, 34, 55, 1),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    _buildTabItem('Friends', 0),
-                    _buildTabItem('National', 1),
-                    _buildTabItem('Global', 2),
-                  ],
-                ),
-              ),
-            ),
+                const SizedBox(height: 20),
 
-            // ---------- CONTENUTO PRINCIPALE ----------
-            Positioned.fill(
-              top: 140,
-              child: SingleChildScrollView(
-                child: _buildLeaderboardContent(),
-              ),
+                // ---------- TABS (Friends, National, Global) ----------
+                _buildTabs(),
+
+                const SizedBox(height: 20),
+
+                // ---------- PODIO ----------
+                _buildPodium(),
+
+                const SizedBox(height: 30),
+
+                // ---------- LISTA UTENTI ----------
+                _buildUserListWidget(),
+              ],
             ),
-          ],
+          ),
         ),
       ),
-      bottomNavigationBar: const navbar(),
     );
   }
 
-  /// Ricostruisce la porzione di UI con i 3 “podii”
-  /// e l’elenco degli altri utenti (statico, ma può diventare dinamico).
-  Widget _buildLeaderboardContent() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 20),
-      child: Column(
-        children: [
-          // --- Podio dei primi 3 ---
-          _buildPodium(),
-          const SizedBox(height: 20),
+  /// Barra in alto con 3 tab e un indicatore sotto
+  Widget _buildTabs() {
+    final tabs = ['Friends', 'National', 'Global'];
 
-          // --- Lista dei partecipanti successivi ---
-          Column(
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: List.generate(tabs.length, (index) {
+        final isSelected = (index == _selectedTab);
+        return GestureDetector(
+          onTap: () {
+            setState(() {
+              _selectedTab = index;
+              // Rigenera sia il podio che la lista
+              _podium = _generateRandomPodium();
+              _userList = _generateRandomUsers();
+            });
+          },
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
             children: [
-              _buildLeaderItem(
-                avatar: 'assets/images/Ellipse11.png',
-                username: 'Sebastian',
-                usertag: '@username',
-                score: 1124,
+              Text(
+                tabs[index],
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 16,
+                ),
               ),
-              const Divider(color: Color.fromARGB(255, 94, 89, 89)),
-              _buildLeaderItem(
-                avatar: 'assets/images/Ellipse12.png',
-                username: 'Jason',
-                usertag: '@username',
-                score: 875,
-              ),
-              const Divider(color: Color.fromARGB(255, 94, 89, 89)),
-              _buildLeaderItem(
-                avatar: 'assets/images/Ellipse13.png',
-                username: 'Natalie',
-                usertag: '@username',
-                score: 774,
-              ),
-              const Divider(color: Color.fromARGB(255, 94, 89, 89)),
-              _buildLeaderItem(
-                avatar: 'assets/images/Ellipse14.png',
-                username: 'Serenity',
-                usertag: '@username',
-                score: 723,
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  // ---------- TABS ----------
-  Widget _buildTabItem(String label, int index) {
-    final bool isSelected = (_selectedTab == index);
-
-    return GestureDetector(
-      onTap: () => _onTabSelected(index),
-      child: Container(
-        width: 80,
-        alignment: Alignment.center,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              label,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 15,
-              ),
-            ),
-            const SizedBox(height: 5),
-            if (isSelected)
-              Container(
-                width: 45,
+              const SizedBox(height: 4),
+              AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
+                width: isSelected ? 50 : 0,
                 height: 3,
                 decoration: BoxDecoration(
-                  color: const Color.fromRGBO(105, 155, 247, 1),
+                  color: isSelected
+                      ? const Color.fromRGBO(105, 155, 247, 1) // blu di evidenza
+                      : Colors.transparent,
                   borderRadius: BorderRadius.circular(10),
                 ),
               ),
-          ],
-        ),
-      ),
+            ],
+          ),
+        );
+      }),
     );
   }
 
-  // ---------- PODIO CENTRALE ----------
+  /// Podio con i 3 partecipanti: 2°, 1°, 3°, con punteggi e immagini random
   Widget _buildPodium() {
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
-        color: const Color.fromRGBO(30, 34, 55, 1),
-      ),
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          // “Podio” centrale (Eiden)
-          Positioned(
-            top: 0,
-            child: Container(
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: [
+        _buildPodiumColumn(_podium[0]),
+        _buildPodiumColumn(_podium[1]),
+        _buildPodiumColumn(_podium[2]),
+      ],
+    );
+  }
+
+  /// Singola colonna del podio, con rettangolo dietro e cerchio davanti
+  Widget _buildPodiumColumn(Map<String, dynamic> data) {
+    final name = data['name'] as String;
+    final score = data['score'] as int;
+    final imgUrl = data['img'] as String;
+    final borderColor = data['borderColor'] as Color;
+    final rank = data['rank'] as int;
+    final rectHeight = data['rectHeight'] as double;
+    final username = data['username'] as String;
+
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        // Rettangolo + cerchio in uno Stack
+        Stack(
+          alignment: Alignment.topCenter,
+          children: [
+            Container(
               width: 122,
-              height: 160,
-              decoration: BoxDecoration(
-                color: const Color.fromRGBO(37, 42, 64, 1),
-                borderRadius: BorderRadius.circular(30),
+              height: rectHeight,
+              margin: const EdgeInsets.only(top: 40),
+              decoration: const BoxDecoration(
+                color: Color.fromRGBO(30, 34, 55, 1.0),
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(30),
+                  topRight: Radius.circular(30),
+                ),
               ),
             ),
-          ),
-
-          // Foto Eiden (centrale)
-          Positioned(
-            top: 0,
-            child: Container(
+            Container(
               width: 82,
               height: 82,
               decoration: BoxDecoration(
-                border: Border.all(
-                  color: const Color.fromRGBO(255, 170, 0, 1),
-                  width: 3,
-                ),
-                borderRadius: BorderRadius.circular(82),
-                image: const DecorationImage(
-                  image: AssetImage('assets/images/Ellipse14.png'),
+                shape: BoxShape.circle,
+                border: Border.all(color: borderColor, width: 3),
+                image: DecorationImage(
                   fit: BoxFit.cover,
+                  image: NetworkImage(imgUrl), // da Picsum
                 ),
               ),
             ),
-          ),
-
-          // Nome e punteggio Eiden
-          const Positioned(
-            top: 90,
-            child: Column(
-              children: [
-                Text(
-                  'Eiden',
-                  style: TextStyle(color: Colors.white, fontSize: 12),
-                ),
-                SizedBox(height: 4),
-                Text(
-                  '2430',
-                  style: TextStyle(
-                    color: Color.fromRGBO(255, 170, 0, 1),
-                    fontSize: 15,
-                  ),
-                ),
-              ],
-            ),
-          ),
-
-          // Indice #1
-          Positioned(
-            top: 50,
-            right: 0,
-            left: 0,
-            child: _buildBadgeIndex('1', const Color.fromRGBO(255, 170, 0, 1)),
-          ),
-
-          // Foto Jackson (sinistra)
-          Positioned(
-            left: 0,
-            bottom: 0,
-            child: Container(
-              width: 68,
-              height: 68,
-              decoration: BoxDecoration(
-                border: Border.all(
-                  color: const Color.fromRGBO(0, 155, 214, 1),
-                  width: 3,
-                ),
-                borderRadius: BorderRadius.circular(68),
-                image: const DecorationImage(
-                  image: AssetImage('assets/images/Ellipse15.png'),
-                  fit: BoxFit.cover,
-                ),
-              ),
-            ),
-          ),
-
-          // Nome e punteggio Jackson (sinistra)
-          const Positioned(
-            left: 5,
-            bottom: 0,
-            child: Column(
-              children: [
-                SizedBox(height: 80),
-                Text(
-                  'Jackson',
-                  style: TextStyle(color: Colors.white, fontSize: 12),
-                ),
-                SizedBox(height: 4),
-                Text(
-                  '1847',
-                  style: TextStyle(
-                    color: Color.fromRGBO(0, 155, 214, 1),
-                    fontSize: 15,
-                  ),
-                ),
-              ],
-            ),
-          ),
-
-          // Indice #2 (sinistra)
-          Positioned(
-            left: 25,
-            top: 30,
-            child: Transform.rotate(
-              angle: -45 * (math.pi / 180),
-              child: _buildSmallSquare(
-                color: const Color.fromRGBO(0, 155, 214, 1),
-                label: '2',
-              ),
-            ),
-          ),
-
-          // Foto Emma Aria (destra)
-          Positioned(
-            right: 0,
-            bottom: 0,
-            child: Container(
-              width: 68,
-              height: 68,
-              decoration: BoxDecoration(
-                border: Border.all(
-                  color: const Color.fromRGBO(0, 217, 95, 1),
-                  width: 3,
-                ),
-                borderRadius: BorderRadius.circular(68),
-                image: const DecorationImage(
-                  image: AssetImage('assets/images/Ellipse16.png'),
-                  fit: BoxFit.cover,
-                ),
-              ),
-            ),
-          ),
-
-          // Nome e punteggio Emma Aria (destra)
-          const Positioned(
-            right: 5,
-            bottom: 0,
-            child: Column(
-              children: [
-                SizedBox(height: 80),
-                Text(
-                  'Emma Aria',
-                  style: TextStyle(color: Colors.white, fontSize: 12),
-                ),
-                SizedBox(height: 4),
-                Text(
-                  '1674',
-                  style: TextStyle(
-                    color: Color.fromRGBO(0, 217, 95, 1),
-                    fontSize: 15,
-                  ),
-                ),
-              ],
-            ),
-          ),
-
-          // Indice #3 (destra)
-          Positioned(
-            right: 25,
-            top: 30,
-            child: Transform.rotate(
-              angle: -45 * (math.pi / 180),
-              child: _buildSmallSquare(
-                color: const Color.fromRGBO(0, 217, 95, 1),
-                label: '3',
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // ---------- QUADRATO PICCOLO (1,2,3) ----------
-  Widget _buildSmallSquare({required Color color, required String label}) {
-    return Container(
-      width: 17,
-      height: 17,
-      decoration: BoxDecoration(
-        color: color,
-        borderRadius: BorderRadius.circular(5),
-      ),
-      child: Center(
-        child: Text(
-          label,
-          style: const TextStyle(color: Colors.white, fontSize: 10),
+          ],
         ),
-      ),
+
+        const SizedBox(height: 8),
+
+        // Nome
+        Text(
+          name,
+          style: const TextStyle(color: Colors.white, fontSize: 14),
+        ),
+
+        // Username
+        Text(
+          username,
+          style: const TextStyle(
+            color: Color.fromRGBO(182, 179, 179, 1),
+            fontSize: 10,
+          ),
+        ),
+
+        // Punteggio (colore in base al rank)
+        Text(
+          '$score',
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: (rank == 1)
+                ? const Color.fromRGBO(255, 170, 0, 1)
+                : (rank == 2)
+                ? const Color.fromRGBO(0, 155, 214, 1)
+                : const Color.fromRGBO(0, 217, 95, 1),
+          ),
+        ),
+      ],
     );
   }
 
-  // ---------- CORONA #1 (sopra Eiden) ----------
-  Widget _buildBadgeIndex(String label, Color color) {
-    return SizedBox(
-      width: 34,
-      height: 26,
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          // Icona corona da SVG (sostituisci con la tua se vuoi)
-          Positioned(
-            top: 7,
-            left: 3,
-            child: SvgPicture.asset(
-              'assets/images/vector.svg',
-              height: 12,
-              width: 12,
-              color: color,
-            ),
-          ),
-          // Cerchietto in alto
-          Positioned(
-            top: 0,
-            left: 13,
-            child: Container(
-              width: 8,
-              height: 8,
-              decoration: BoxDecoration(
-                color: color,
-                borderRadius: BorderRadius.circular(8),
-              ),
-            ),
-          ),
-          // Numero #1
-          Positioned(
-            bottom: 0,
-            child: Text(
-              label,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 12,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // ---------- UTENTE SEMPLICE (LISTA SUCCESSIVI) ----------
-  Widget _buildLeaderItem({
-    required String avatar,
-    required String username,
-    required String usertag,
-    required int score,
-  }) {
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      child: Row(
-        children: [
-          // Avatar
-          Container(
-            width: 50,
-            height: 50,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(50),
-              image: DecorationImage(
-                image: AssetImage(avatar),
-                fit: BoxFit.cover,
-              ),
-            ),
-          ),
-          const SizedBox(width: 10),
-          // Nome + tag
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  username,
-                  style: const TextStyle(color: Colors.white, fontSize: 12),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  usertag,
-                  style: const TextStyle(
-                    color: Color.fromRGBO(182, 179, 179, 1),
-                    fontSize: 8,
+  /// Widget che mostra la lista di utenti random con immagini da Picsum
+  Widget _buildUserListWidget() {
+    return Column(
+      children: List.generate(_userList.length, (index) {
+        final user = _userList[index];
+        return Column(
+          children: [
+            // Riga utente
+            Container(
+              margin: const EdgeInsets.symmetric(vertical: 8),
+              child: Row(
+                children: [
+                  // Immagine da Picsum
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(25),
+                    child: Image.network(
+                      user['img'] as String,
+                      width: 50,
+                      height: 50,
+                      fit: BoxFit.cover,
+                    ),
                   ),
-                ),
-              ],
+                  const SizedBox(width: 12),
+                  // Nome e username
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          user['name'] as String,
+                          style: const TextStyle(color: Colors.white),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          user['username'] as String,
+                          style: const TextStyle(
+                            color: Color.fromRGBO(182, 179, 179, 1),
+                            fontSize: 10,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  // Punteggio a destra
+                  Text(
+                    '${user['score']}',
+                    style: const TextStyle(color: Colors.white),
+                  ),
+                ],
+              ),
             ),
-          ),
-          // Punteggio
-          Text(
-            score.toString(),
-            style: const TextStyle(color: Colors.white, fontSize: 12),
-          ),
-        ],
-      ),
+            // Divider
+            if (index < _userList.length - 1)
+              Container(
+                height: 1,
+                color: const Color.fromRGBO(94, 89, 89, 1),
+              ),
+          ],
+        );
+      }),
     );
   }
 }

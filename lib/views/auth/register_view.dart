@@ -46,7 +46,7 @@ class Loginscreen3WidgetState extends State<Loginscreen3Widget> {
             left: 0,
             right: 0,
             child: Image.asset(
-              'assets/images/Illustration.png',
+              'lib/assets/images/illustration1.png',
               fit: BoxFit.fitWidth,
               height: 265,
             ),
